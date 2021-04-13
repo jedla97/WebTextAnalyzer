@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "Result";
+}
+
+<h2>Result</h2>
+
+@if (Model != null && Model.Result != null)
+{
+    foreach (var item in Model.Result)
+    {
+        <p style="font-size: 2em;">@item</p>
+    }
+
+}
+
+
+
