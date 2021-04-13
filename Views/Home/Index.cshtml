@@ -15,22 +15,24 @@
         <h4>Form</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        <div class="col-md-1">
+        <div class="form-group">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Input, new { htmlAttributes = new { @class = "Mytextarea", @placeholder = "Input text to be analysed" } })
+                @Html.ValidationMessageFor(model => model.Input, "", new { @class = "text-danger" })
+            </div>
         </div>
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Input, new { htmlAttributes = new { @class = "Mytextarea", @placeholder = "Type your name" } })
-            @Html.ValidationMessageFor(model => model.Input, "", new { @class = "text-danger" })
-        </div>
-    </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="col-md-12 button-result">
+                <div class="col-md-4 button-result-div">
+                    <input type="submit" value="Analyse" class="btn btn-default button-result-btn" />
+                </div>
             </div>
         </div>
     </div>
-    if(Model != null && Model.Result != null)
+    if (Model != null && Model.Result != null)
     {
         foreach (var item in Model.Result)
         {
