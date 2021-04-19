@@ -28,6 +28,7 @@ namespace WebTextAnalyzer.Models
     {
         public string Text { get; private set; }
         private string[] Words { get; set; }
+        public Dictionary<string, int> MostCommonWordsDictionary { get; set; }
 
         public TextOperation(string text)
         {
@@ -162,34 +163,24 @@ namespace WebTextAnalyzer.Models
                     dictionary.Add(item, 1);
                 }
             }
-
+            MostCommonWordsDictionary = dictionary;
 
             sortedDictionary = dictionary.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
             var count = sortedDictionary.Count();
             dictionary.Clear();
-           // sortedDictionary = sortedDictionary.Reverse();
+
             for (int i = 0; i < count && i < 10 ; i++)
             {
                 var item = sortedDictionary.ElementAt(i);
                 dictionary.Add(item.Key, item.Value);
             }
-                       
-            /**
-            foreach (var key in dict)
-            {
-                if (key.Value > ocurencies)
-                {
-                    ocurencies = key.Value;
-                    commonWords.Clear();
-                    commonWords.Add(key.Key);
-                }
-                else if (key.Value == ocurencies)
-                {
-                    commonWords.Add(key.Key);
-                }
-            }
-            **/
+           
             return dictionary;
+        }
+
+        public int NumberOfDifferentWords()
+        {
+            return MostCommonWordsDictionary.Count();
         }
 
     }
