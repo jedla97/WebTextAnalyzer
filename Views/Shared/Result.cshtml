@@ -14,5 +14,23 @@
 
 }
 
+@if (Model != null && Model.ListOfLongestWords != null)
+{
+    foreach (var item in Model.ListOfLongestWords)
+    {
+        <p style="font-size: 2em;">@item</p>
+    }
+
+}
+
+@if (Model != null && Model.MostCommonWords != null)
+{
+    foreach (var item in Model.MostCommonWords)
+    {
+        <p style="font-size: 2em;">@item</p>
+    }
+
+}
+
 
 

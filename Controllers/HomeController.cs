@@ -25,7 +25,7 @@ namespace WebTextAnalyzer.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    form.Compute();
+                    form.ComputeStats();
                 }
                 return View("Result", form);
             }
