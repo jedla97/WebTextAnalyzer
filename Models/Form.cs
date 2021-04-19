@@ -18,8 +18,8 @@ namespace WebTextAnalyzer.Models
      * number of sentences                                      x
      * longest words                                            x
      * shortest word                                            x
-     * most commons word and their number ocurencies            
-     * number of different word                                 
+     * most commons word and their number ocurencies            x
+     * number of different word                                 x    
      * average number of character per word                             
      * number of syllable                                       x
      * number of syllable per word                              
@@ -35,10 +35,11 @@ namespace WebTextAnalyzer.Models
         public int NumberOfSentences { get; set; }
         public List<string> ListOfLongestWords { get; set; }
         public List<string> ListOfShortestWords { get; set; }
-        public int NumberOfSyllables { get; set; }
         public Dictionary<string, int> MostCommonWords { get; set; }
+        public int NumberOfDifferentWords { get; set; }
+        public int NumberOfSyllables { get; set; }
 
-
+        //TODO remove attribut only for testing 
         public List<int> Result { get; set; }
 
 
@@ -60,7 +61,11 @@ namespace WebTextAnalyzer.Models
             ListOfLongestWords = textOperations.ListOfLongestWords();
             ListOfShortestWords = textOperations.ListOfShortestWords();
             NumberOfSyllables = textOperations.CountSyllable();
+
+            // next two items must be in this order otherwise NumberOfDifferntWords be 0
             MostCommonWords = textOperations.MostCommonWords();
+            NumberOfDifferentWords = textOperations.NumberOfDifferentWords();
+            //TODO remove attribut only for testing 
             Result.Add(textOperations.CountWords());
 
 
