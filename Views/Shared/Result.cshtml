@@ -1,36 +1,62 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Result";
 }
 
-<h2>Result</h2>
+<h1>Text</h1>
+<p style="font-size: 1.5em;">@Model.Output</p>
+
+<h1>Result</h1>
 
 @if (Model != null && Model.Result != null)
 {
     foreach (var item in Model.Result)
     {
-        <p style="font-size: 2em;">@item</p>
+        <p style="font-size: 1.5em;">@item</p>
     }
 
 }
 
 @if (Model != null && Model.ListOfLongestWords != null)
 {
-    foreach (var item in Model.ListOfLongestWords)
-    {
-        <p style="font-size: 2em;">@item</p>
-    }
+    <p style="font-size: 1.5em; margin-top: 2em;">Longest words:</p>
+    <p style="font-size: 1.5em;">
+        @foreach (var item in Model.ListOfLongestWords)
+        {
+            @String.Format("{0}, ", @item);
+        }
+    </p>
+}
+
+@if (Model != null && Model.ListOfShortestWords != null)
+{
+    <p style="font-size: 1.5em; margin-top: 2em;">Shortest words:</p>
+    <p style="font-size: 1.5em;">
+        @foreach (var item in Model.ListOfShortestWords)
+        {
+            @String.Format("{0}, ", @item);
+        }
+    </p>
 
 }
 
 @if (Model != null && Model.MostCommonWords != null)
 {
-    foreach (var item in Model.MostCommonWords)
-    {
-        <p style="font-size: 2em;">@item</p>
-    }
+    <p style="font-size: 1.5em; margin-top: 2em;">Most common words:</p>
+    <table style="width:50%" >
+        <tr>
+            <th class="table-cell">Word</th>
+            <th class="table-cell">Number of ocurrencies</th>
+        </tr>
+        @foreach (var item in Model.MostCommonWords)
+        {
+        <tr>
+            <th class="table-cell">@item.Key</th>
+            <th class="table-cell">@item.Value</th>
+        </tr>
+        }
+    </table>
+
+
+
 
 }
-
-
-

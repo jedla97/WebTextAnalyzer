@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -13,39 +14,42 @@ namespace WebTextAnalyzer.Models
      * number of char                                           x
      * number of char without whitespace                        x
      * number of char without digits                            x
-     * number of digit
+     * number of digit                                          x
      * number of words                                          x
      * number of sentences                                      x
      * longest words                                            x
      * shortest word                                            x
-     * most commons word and their number ocurencies            x
+     * most commons word and their number ocurencies            -
      * number of different word                                 x    
-     * average number of character per word                             
+     * average number of character per word                     x       
      * number of syllable                                       x
-     * number of syllable per word                              
+     * number of syllable per word                              x
      */
     public class Form
     {
         [DataType(DataType.MultilineText)]
         public string Input { get; set; }
-        public int NumberOfChar { get; set; }
-        public int NumberOfCharWithoutWhiteSpace { get; set; }
-        public int NumberOfCharWithoutSpaceAndDigit { get; set; }
-        public int NumberOfWords { get; set; }
-        public int NumberOfSentences { get; set; }
+        public string Output { get; private set; }
+        private int NumberOfChar { get; set; }
+        private int NumberOfCharWithoutWhiteSpace { get; set; }
+        private int NumberOfCharWithoutSpaceAndDigit { get; set; }
+        private int NumberOfWords { get; set; }
+        private int NumberOfSentences { get; set; }
         public List<string> ListOfLongestWords { get; set; }
         public List<string> ListOfShortestWords { get; set; }
         public Dictionary<string, int> MostCommonWords { get; set; }
-        public int NumberOfDifferentWords { get; set; }
-        public int NumberOfSyllables { get; set; }
+        private int NumberOfDifferentWords { get; set; }
+        private int NumberOfSyllables { get; set; }
+        private double AverageCharPerWord { get; set; }
+        private double AverageSyllablePerWord { get; set; }
 
-        //TODO remove attribut only for testing 
-        public List<int> Result { get; set; }
+
+        public List<string> Result { get; set; }
 
 
         public Form()
         {
-            Result = new List<int>();
+            Result = new List<string>();
             ListOfLongestWords = new List<string>();
             ListOfShortestWords = new List<string>();
         }
@@ -65,12 +69,52 @@ namespace WebTextAnalyzer.Models
             // next two items must be in this order otherwise NumberOfDifferntWords be 0
             MostCommonWords = textOperations.MostCommonWords();
             NumberOfDifferentWords = textOperations.NumberOfDifferentWords();
-            //TODO remove attribut only for testing 
-            Result.Add(textOperations.CountWords());
 
+            AverageCharPerWord = (double)NumberOfCharWithoutWhiteSpace / NumberOfWords;
+            AverageSyllablePerWord = (double)NumberOfSyllables / NumberOfWords;
 
+            this.CheckIfAverageIsNumber();
+            this.FillOutput();
+            this.SetOutputOfMaxLenght();
+        }
 
+        private void FillOutput()
+        {
+            Result.Add(String.Format("Word count: {0}", NumberOfWords));
+            Result.Add(String.Format("Different word count: {0}", NumberOfDifferentWords));
+            Result.Add(String.Format("Total character count: {0}", NumberOfChar));
+            Result.Add(String.Format("Character count (spaces not included): {0}", NumberOfCharWithoutWhiteSpace));
+            Result.Add(String.Format("Character count (spaces and digits not included): {0}", NumberOfCharWithoutSpaceAndDigit));
+            Result.Add(String.Format("Number of digits: {0}", (NumberOfCharWithoutWhiteSpace - NumberOfCharWithoutSpaceAndDigit)));
+            Result.Add(String.Format("Sentence count: {0}", NumberOfSentences));
+            Result.Add(String.Format("Syllable count: {0}", NumberOfSyllables));
+            Result.Add(String.Format("Average character per word: {0:F2}", AverageCharPerWord));
+            Result.Add(String.Format("Average syllable per word: {0:F2}", AverageSyllablePerWord));
+        }
 
+        private void SetOutputOfMaxLenght()
+        {
+            if(Input.Length <= 500)
+            {
+                Output = Input;
+            }
+            else
+            {
+                Output = String.Format("{0}...", Input.Substring(0, 500));
+            }
+        } 
+
+        // when not a number change it to 0
+        private void CheckIfAverageIsNumber()
+        {
+            if (Double.IsNaN(AverageCharPerWord) || Double.IsInfinity(AverageCharPerWord))
+            {
+                AverageCharPerWord = 0;
+            }
+            if (Double.IsNaN(AverageSyllablePerWord) || Double.IsInfinity(AverageSyllablePerWord))
+            {
+                AverageSyllablePerWord = 0;
+            }
         }
 
     }

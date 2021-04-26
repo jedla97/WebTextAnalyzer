@@ -7,22 +7,6 @@ using System.Web;
 
 namespace WebTextAnalyzer.Models
 {
-    /**
-     * number of char                                           x
-     * number of char without whitespace                        x
-     * number of char without digits                            x
-     * number of digit
-     * number of words                                          x
-     * number of sentences                                      x
-     * longest words                                            x
-     * shortest word                                            x
-     * most commons word and their number ocurencies            
-     * number of different word                                 
-     * number of character per word                             
-     * number of syllable                                       x
-     * number of syllable per word                              
-     */
-
     
     public class TextOperation
     {
@@ -33,7 +17,17 @@ namespace WebTextAnalyzer.Models
         public TextOperation(string text)
         {
             this.Text = text;
-            this.Words = Regex.Replace(text.Replace("\t", " ").Replace("\n", " "), @"([^a-zA-Z\s])", "").Split(' ');
+            string textHelp = Regex.Replace(text.Replace("\t", " ").Replace("\n", " "), @"(\s[\w]{1}((?=\s)|(?=\.)|(?=\?)|(?=\!)))|([^\p{Ll}\p{Lu}\s])", "");
+            textHelp = Regex.Replace(textHelp, @"(\s+)", " ");
+            if (!Regex.Match(textHelp, @"\s{1}(?!\w)").Success)
+            {
+                this.Words = textHelp.Split(' ');
+            }
+            else
+            {
+                this.Words = null;
+            }
+            this.RemnoveEmptyString();
 
         }
 
@@ -52,7 +46,14 @@ namespace WebTextAnalyzer.Models
 
         public int CountWords()
         {
-            return Words.Length;
+            if (Words == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return Words.Length;
+            }
         }
 
         public int CountSentences()
@@ -61,15 +62,28 @@ namespace WebTextAnalyzer.Models
             string[] row = Text.Replace(" ", "").Replace("\t", "").Replace("\n", "").Split(delimiterChars);
 
             int counter = 0;
-            for (int i = 0; i < row.Length - 2; i++)
+            if (row.Count() <= 2 && !row[0].Equals(""))
             {
-                if (i == 0 && Char.IsUpper(row[i][0]))
+                if (Char.IsUpper(row[0][0]))
                 {
                     counter++;
                 }
-                if (Char.IsUpper(row[i + 1][0]))
+            }
+            else
+            {
+                for (int i = 0; i < row.Length - 2; i++)
                 {
-                    counter++;
+                    if (i == 0 && Char.IsUpper(row[i][0]))
+                    {
+                        counter++;
+                    }
+                    if (!row[i + 1].Equals(""))
+                    {
+                        if (Char.IsUpper(row[i + 1][0]))
+                        {
+                            counter++;
+                        }
+                    }
                 }
             }
             return counter;
@@ -79,44 +93,48 @@ namespace WebTextAnalyzer.Models
         {
             List<string> longestWords = new List<string>();
             int biggestLenght = 0;
-
-            foreach (var word in Words)
+            if (Words != null)
             {
-                if (word.Length > biggestLenght)
+                foreach (var word in Words)
                 {
-                    biggestLenght = word.Length;
-                    longestWords.Clear();
-                    longestWords.Add(word);
-                }
-                else if (word.Length == biggestLenght && !longestWords.Contains(word))
-                {
-                    longestWords.Add(word);
+                    if (word.Length > biggestLenght)
+                    {
+                        biggestLenght = word.Length;
+                        longestWords.Clear();
+                        longestWords.Add(word);
+                    }
+                    else if (word.Length == biggestLenght && !longestWords.Contains(word))
+                    {
+                        longestWords.Add(word);
+                    }
                 }
             }
-
             return longestWords;
         }
 
         public List<string> ListOfShortestWords()
         {
-            List<string> longestWords = new List<string>();
-            int biggestLenght = 0;
+            List<string> shortestWords = new List<string>();
+            int shortestLenght = int.MaxValue;
 
-            foreach (var word in Words)
+            if (Words != null)
             {
-                if (word.Length < biggestLenght)
+                foreach (var word in Words)
                 {
-                    biggestLenght = word.Length;
-                    longestWords.Clear();
-                    longestWords.Add(word);
-                }
-                else if (word.Length == biggestLenght && !longestWords.Contains(word))
-                {
-                    longestWords.Add(word);
+                    if (word.Length < shortestLenght)
+                    {
+                        shortestLenght = word.Length;
+                        shortestWords.Clear();
+                        shortestWords.Add(word);
+                    }
+                    else if (word.Length == shortestLenght && !shortestWords.Contains(word))
+                    {
+                        shortestWords.Add(word);
+                    }
                 }
             }
 
-            return longestWords;
+            return shortestWords;
         }
 
         //https://stackoverflow.com/questions/61033977/how-to-determine-syllables-in-a-word-by-using-regular-expression
@@ -151,16 +169,19 @@ namespace WebTextAnalyzer.Models
         public Dictionary<string, int> MostCommonWords()
         {
             Dictionary<string, int> dictionary = new Dictionary<string, int>();
-            Dictionary<string, int> sortedDictionary = new Dictionary<string, int>();       
-            foreach (var item in Words)
+            Dictionary<string, int> sortedDictionary = new Dictionary<string, int>();
+            if (Words != null)
             {
-                if (dictionary.ContainsKey(item))
+                foreach (var item in Words)
                 {
-                    dictionary[item]++;
-                }
-                else
-                {
-                    dictionary.Add(item, 1);
+                    if (dictionary.ContainsKey(item))
+                    {
+                        dictionary[item]++;
+                    }
+                    else
+                    {
+                        dictionary.Add(item, 1);
+                    }
                 }
             }
             MostCommonWordsDictionary = dictionary;
@@ -169,18 +190,35 @@ namespace WebTextAnalyzer.Models
             var count = sortedDictionary.Count();
             dictionary.Clear();
 
-            for (int i = 0; i < count && i < 10 ; i++)
+            for (int i = 0; i < count && i < 10; i++)
             {
                 var item = sortedDictionary.ElementAt(i);
                 dictionary.Add(item.Key, item.Value);
             }
-           
+
             return dictionary;
         }
 
         public int NumberOfDifferentWords()
         {
             return MostCommonWordsDictionary.Count();
+        }
+
+        private void RemnoveEmptyString()
+        {
+            if (Words != null)
+            {
+
+                var helpList = new List<string>(Words);
+                for (int i = 0; i < helpList.Count; i++)
+                {
+                    if (helpList[i] == "")
+                    {
+                        helpList.RemoveAt(i);
+                    }
+                }
+                Words = helpList.ToArray();
+            }
         }
 
     }
